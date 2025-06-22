@@ -1,0 +1,13 @@
+.App-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.Sidebar-Viewport{
+  display: flex;
+  flex-direction: row;
+}
+
+.Viewport {
+  flex: 1;
+}

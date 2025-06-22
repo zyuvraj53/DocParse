@@ -1,0 +1,4 @@
+__pycache__/
+.venv
+processed
+example_pdfs
