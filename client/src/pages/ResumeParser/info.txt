@@ -1,0 +1,110 @@
+        {/* <div> */}
+        {/* Important Spider Chart */}
+        {/* </div> */}
+        {/* a. Bar Chart: Fit Scores Comparison
+Purpose: Compare total_fit, skills_match, and education_match across top n candidates.
+
+Data:
+X-axis: Candidate names (e.g., "Aviral Srivastava").
+
+Y-axis: Score (0–100).
+
+Bars: One for each score type (total_fit, skills_match, education_match).
+
+Example:
+For Aviral: total_fit = 32.84, skills_match = 42.11, education_match = 80.
+
+Group bars by candidate for easy comparison.
+
+Tool: Chart.js (React) or Matplotlib (Python).
+
+Insight: Identify candidates with balanced or skewed scores (e.g., high education but low skills match).
+
+b. Heatmap: Skills Presence Across Candidates
+Purpose: Show which technical and soft skills are common among top n candidates.
+
+Data:
+Rows: Candidates.
+
+Columns: Unique skills (e.g., "Java", "Python", "Communication").
+
+Values: Binary (1 if skill present, 0 if absent) or count (if skills have weights).
+
+Remove duplicates from skills.technical and skills.soft before plotting.
+
+Example:
+Aviral has "Java", "Python", "Communication", etc.
+
+Heatmap shows which candidates share skills critical to the role.
+
+Tool: Seaborn (Python) or D3.js (web).
+
+Insight: Highlight skill gaps or common strengths (e.g., all candidates know "Python").
+
+c. Pie Chart: Skills Distribution
+Purpose: Show the proportion of technical vs. soft skills for a single candidate or aggregated across top n.
+
+Data:
+Categories: Technical Skills, Soft Skills.
+
+Values: Count of unique skills (e.g., Aviral has 6 unique technical skills, 6 unique soft skills after deduplication).
+
+Example:
+Aviral: 50% technical (6/12), 50% soft (6/12).
+
+Tool: Chart.js or Matplotlib.
+
+Insight: Assess balance between technical and soft skills.
+
+d. Scatter Plot: Skills Match vs. Education Match
+Purpose: Visualize trade-offs between skills_match and education_match for top n candidates.
+
+Data:
+X-axis: skills_match (0–100).
+
+Y-axis: education_match (0–100).
+
+Points: Each candidate, sized by total_fit.
+
+Label points with candidate names.
+
+Example:
+Aviral: (42.11, 80, size = 32.84).
+
+Tool: Plotly (interactive) or Seaborn.
+
+Insight: Identify candidates with high skills but low education (or vice versa) to match role needs.
+
+e. Stacked Bar Chart: Fit Score Breakdown
+Purpose: Show how total_fit is composed of skills_match, education_match, experience_relevance, etc.
+
+Data:
+X-axis: Candidates.
+
+Y-axis: Score (0–100).
+
+Stacked bars: Each segment represents a fit score component.
+
+Example:
+Aviral: skills_match = 42.11, education_match = 80, others = 0.
+
+Tool: Chart.js or Matplotlib.
+
+Insight: Understand which factors drive a candidate’s total_fit.
+
+f. Word Cloud: Common Skills
+Purpose: Visualize frequently occurring skills across top n candidates.
+
+Data:
+Words: All technical and soft skills.
+
+Size: Based on frequency across candidates.
+
+Example:
+Larger words for skills like "Python" or "Communication" if common.
+
+Tool: WordCloud (Python) or a JavaScript library.
+
+Insight: Quickly see dominant skills in the candidate pool.
+
+ */}

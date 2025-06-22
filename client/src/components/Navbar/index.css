@@ -7,9 +7,9 @@
 }
 
 .Title {
-  font-size: x-large;
+  font-size: 2.5rem;
   padding-left: 1rem;
-  padding-top: 1rem;
+  /* padding-top: 1rem; */
 }
 
 .Toggle {
