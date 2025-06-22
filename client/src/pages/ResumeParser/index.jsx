@@ -5,23 +5,22 @@ export default function ResumeParser() {
     <div className="Layout">
       <div>Resume Parser</div>
       <div>
-        <div>Upload pdfs</div> { /* Button */ }
+        <div>Upload pdfs</div> {/* Button */}
         <div>
-          process pdfs {/* Should be a button, should only be clickable when
+          process pdfs{" "}
+          {/* Should be a button, should only be clickable when
           uploading is done successfully */}
         </div>
       </div>
       <div>
         Content about the uploaded pdfs
-
         <div>
-          Choose how many top pdfs you want to see {/ * Should not exceed the number of pdfs uploaded * /}
+          Choose how many top pdfs you want to see{" "}
+          {/* Should not exceed the number of pdfs uploaded */}
         </div>
-
-        <div>
-          {/* Important Spider Chart */}
-        </div>
-
+        {/* <div> */}
+        {/* Important Spider Chart */}
+        {/* </div> */}
         {/* a. Bar Chart: Fit Scores Comparison
 Purpose: Compare total_fit, skills_match, and education_match across top n candidates.
 
@@ -129,7 +128,6 @@ Tool: WordCloud (Python) or a JavaScript library.
 Insight: Quickly see dominant skills in the candidate pool.
 
  */}
-
       </div>
     </div>
   );

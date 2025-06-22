@@ -1,13 +1,25 @@
 .App-layout {
   display: flex;
-  flex-direction: column;
-}
-
-.Sidebar-Viewport{
-  display: flex;
   flex-direction: row;
 }
 
-.Viewport {
-  flex: 1;
+.Navbar-Viewport{
+  display: flex;
+  flex-direction: column;
+  flex: 1
+}
+
+.Main-Content {
+  display: flex;
+  flex-direction: row;
+  padding: 2rem;
+  /* flex: 1; */
+}
+
+.Viewport-Section {
+  padding: 2rem;
+}
+
+.Viewport-Subsection {
+  padding: 2rem;
 }

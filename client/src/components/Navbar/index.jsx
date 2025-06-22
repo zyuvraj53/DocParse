@@ -1,13 +1,14 @@
 import './index.css'
+import DarkModeToggle from '../DarkModeToggle';
 
-export default function Nabar(){
+export default function Navbar(){
   return (
-    <div className="Nabar-Layout">
-      <div>
-        Name
+    <div className="Navbar-Layout">
+      <div className='Title dm-serif'>
+        Neo HRMS
       </div>
-      <div>
-        light-dark mode toggle
+      <div className='Toggle'>
+        <DarkModeToggle/>
       </div>
     </div>
   )

@@ -1,5 +1,20 @@
-.Nabar-Layout {
+.Navbar-Layout {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  right: 0;
+  min-height: 8vh;
+}
+
+.Title {
+  font-size: x-large;
+  padding-left: 1rem;
+  padding-top: 1rem;
+}
+
+.Toggle {
+  transform: scale(0.5);
+  transform-origin: top right; /* optional: control where it scales from */
+  padding-right: 1rem;
+  padding-top: 1rem;
 }
