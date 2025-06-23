@@ -56,7 +56,7 @@ import numpy as np
 # logger = logging.getLogger(__name__)
 
 # Constants
-UPLOADS_DIR = "example_pdfs" #! Change later
+UPLOADS_DIR = "uploads" #! Change later
 PROCESSED_DIR = "processed"  # ! Change later
 
 # Ensure directories exist

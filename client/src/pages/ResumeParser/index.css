@@ -7,3 +7,9 @@
 .Subtitle {
   padding-left: 0.5rem;
 }
+
+.drag-n-drop {
+  min-width: 10vh;
+  height: 2rem;
+  border: 2px dashed black;
+}
