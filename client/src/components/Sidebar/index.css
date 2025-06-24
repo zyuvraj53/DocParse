@@ -2,11 +2,20 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--color-surface, #f8f9fa);
+  background: linear-gradient(180deg, #ffffff, #f8f9fa); /* Subtle gradient */
+  box-shadow: 50px 0px 8px rgba(0, 0, 0, 0.5); /* Soft shadow for depth */
   border-right: 2px solid var(--color-muted, #e9ecef);
   transition: width 0.3s ease;
   overflow: hidden;
-  position: relative;
+  position: sticky;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .Sidebar-layout {
+    background: linear-gradient(180deg, #1a202c, #2d3748);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .Sidebar-layout.collapsed {
@@ -18,7 +27,7 @@
 }
 
 .Menu-Button {
-  border-bottom: 1px solid var(--color-muted, #e9ecef);
+  border-bottom: 1px solid var(--color-text-dark, #e9ecef);
   flex-shrink: 0;
 }
 
@@ -32,14 +41,28 @@
   align-items: center;
   padding: 0.75rem 0;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.4s ease-in-out, transform 0.4s ease;
   white-space: nowrap;
   position: relative;
+  background-color: transparent;
+  color: var(--color-text);
 }
 
 .section-item:hover {
-  background-color: var(--color-muted, #e9ecef);
+  background: var(--color-hover);
+  color: var(--color-accent);
+  /* transform: scale(1.01); */
 }
+
+@media (prefers-color-scheme: dark) {
+  .section-item {
+    color: var(--color-text-dark);
+  }
+  .section-item:hover {
+    background: var(--color-hover-dark);
+  }
+}
+
 
 .icon-container {
   width: 4rem;

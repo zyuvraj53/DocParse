@@ -23,12 +23,15 @@
 
 /* Root variables for Light Mode */
 :root {
-  --color-bg: #c3c3c3;
-  --color-text: #111827;
-  --color-muted: #6b7280;
-  --color-border: #00a9e6; /* blue-300 */
-  --color-primary: #55a8ff; /* blue-600 */
-  --color-surface: #00a9e686;
+  --color-surface: #ffffff;
+  --color-surface-dark: #1a202c;
+  --color-muted: #e9ecef;
+  --color-muted-dark: #4a5568;
+  --color-accent: #4c51bf;
+  --color-text: #2d3748;
+  --color-text-dark: #e2e8f0;
+  --color-hover: #edf2f7;
+  --color-hover-dark: #2d3748;
 
   font-family: 'Manrope', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

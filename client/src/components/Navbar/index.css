@@ -1,20 +1,62 @@
 .Navbar-Layout {
   display: flex;
-  flex-direction: row;
+  align-items: center; /* Vertically center content */
   justify-content: space-between;
-  right: 0;
-  min-height: 8vh;
+  min-height: 64px; /* Use fixed height for consistency (~8vh equivalent) */
+  padding: 0 1.5rem; /* Consistent padding */
+  background: linear-gradient(90deg, #ffffff, #f8f9fa); /* Subtle gradient */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Soft shadow for depth */
+  position: sticky; /* Optional: Sticky navbar */
+  top: 0;
+  z-index: 100;
+  transition: background 0.3s ease; /* Smooth transition for dark mode */
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .Navbar-Layout {
+    background: linear-gradient(90deg, #1a202c, #2d3748);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .Title {
-  font-size: 2.5rem;
-  padding-left: 1rem;
-  /* padding-top: 1rem; */
+  font-size: clamp(1.75rem, 5vw, 2.25rem); /* Responsive font size */
+  font-weight: 600; /* Bolder for emphasis */
+  color: #2d3748; /* Neutral dark color */
+  transition: color 0.3s ease;
+}
+
+/* Dark mode title */
+@media (prefers-color-scheme: dark) {
+  .Title {
+    color: #e2e8f0; /* Light color for contrast */
+  }
 }
 
 .Toggle {
-  transform: scale(0.5);
-  transform-origin: top right; /* optional: control where it scales from */
-  padding-right: 1rem;
-  padding-top: 1rem;
+  display: flex;
+  align-items: center; /* Center toggle vertically */
+  transform: scale(0.75); /* Slightly larger for usability */
+  transform-origin: center; /* Scale from center */
+  transition: transform 0.2s ease; /* Smooth scaling */
+}
+
+.Toggle:hover {
+  transform: scale(0.85); /* Subtle hover effect */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .Navbar-Layout {
+    padding: 0 1rem;
+  }
+
+  .Title {
+    font-size: clamp(1.5rem, 4vw, 1.75rem);
+  }
+
+  .Toggle {
+    transform: scale(0.65);
+  }
 }

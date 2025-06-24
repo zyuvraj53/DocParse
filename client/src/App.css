@@ -12,7 +12,7 @@
 .Main-Content {
   display: flex;
   flex-direction: row;
-  padding: 2rem;
+  padding-left: 8vw;
   /* flex: 1; */
 }
 
@@ -21,5 +21,14 @@
 }
 
 .Viewport-Subsection {
-  padding: 2rem;
+  margin: 4vh;
+  padding: 4vh;
+  border: 1px solid var(--color-surface);
+  border-radius: 10px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.Viewport-Subsection:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

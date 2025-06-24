@@ -33,7 +33,7 @@ const StyledWrapper = styled.div`
 
   .line {
     fill: none;
-    stroke: black;
+    stroke:#4c51bf;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 3;
