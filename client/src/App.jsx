@@ -2,6 +2,11 @@ import { Routes, Route, Link } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import ResumeParser from "./pages/ResumeParser";
+import JoiningDocParser from "./pages/JoiningDocParser";
+import JoiningDocParserHome from "./pages/JoiningDocParser";
+import EdCertParser from "./pages/JoiningDocParser/EdCertParser";
+import ExperienceLetterParser from "./pages/JoiningDocParser/ExperienceLetterParser";
+import PayslipParser from "./pages/JoiningDocParser/PayslipParser";
 import "./App.css";
 
 export default function App() {
@@ -14,7 +19,12 @@ export default function App() {
           <Routes>
             <Route path="/" element={<MainContent />} />
             <Route path="/ResumeParser" element={<ResumeParser />} />
-            {/* Add more routes as needed */}
+            <Route path="/JoiningDocParser/*" element={<JoiningDocParser />}>
+              <Route index element={<JoiningDocParserHome />} />
+              <Route path="EdCertParser" element={<EdCertParser />} />
+              <Route path="ExperienceLetterParser" element={<ExperienceLetterParser />} />
+              <Route path="PayslipParser" element={<PayslipParser />} />
+            </Route>
           </Routes>
         </div>
       </div>
@@ -31,10 +41,18 @@ function MainContent() {
         </Link>
       </div>
       <div className="Viewport-Section">
-        Parse Joining Documents
-        <div className="Viewport-Subsection">Educational Certificates</div>
-        <div className="Viewport-Subsection">Experience Letters</div>
-        <div className="Viewport-Subsection">Payslip Parsing</div>
+        <Link to="/JoiningDocParser" className="nav-link">
+          Parse Joining Documents
+        </Link>
+        <div className="Viewport-Subsection">
+          <Link to="/JoiningDocParser/EdCertParser">Educational Certificates</Link>
+        </div>
+        <div className="Viewport-Subsection">
+          <Link to="/JoiningDocParser/ExperienceLetterParser">Experience Letters</Link>
+        </div>
+        <div className="Viewport-Subsection">
+          <Link to="/JoiningDocParser/PayslipParser">Payslip Parsing</Link>
+        </div>
       </div>
       <div className="Viewport-Section">
         Experience Reimbursement Parsing

@@ -56,8 +56,8 @@ import numpy as np
 # logger = logging.getLogger(__name__)
 
 # Constants
-UPLOADS_DIR = "uploads" #! Change later
-PROCESSED_DIR = "processed"  # ! Change later
+UPLOADS_DIR = "uploads_resumes" #! Change later
+PROCESSED_DIR = "processed_resumes"  # ! Change later
 
 # Ensure directories exist
 Path(UPLOADS_DIR).mkdir(exist_ok=True)
@@ -419,7 +419,7 @@ class EnhancedPDFExtractor:
         
         if not education_section:
             return
-        
+            
         education_entries = []
         lines = education_section.split('\n')
         

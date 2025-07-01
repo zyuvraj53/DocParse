@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from routes.route import router_resumes
+from routes.route import router_payslips
 from routes.route import router_uploads
+from routes.route import router_experience_letters
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -14,4 +16,6 @@ app.add_middleware(
 )
 
 app.include_router(router_resumes)
+app.include_router(router_experience_letters)
 app.include_router(router_uploads)
+app.include_router(router_payslips)
