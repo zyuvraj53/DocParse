@@ -819,6 +819,7 @@ class EnhancedPDFExtractor:
         Returns:
             Ranked list of candidates
         """
+
         if not candidates:
             return []
             
@@ -878,6 +879,8 @@ class EnhancedPDFExtractor:
         Returns:
             Dictionary with all results
         """
+
+        print(job_description)
         filename = os.path.basename(pdf_path)
         # logger.info(f"Processing {filename}")
         
@@ -934,6 +937,7 @@ class EnhancedPDFExtractor:
         Returns:
             List of processed results
         """
+
         pdf_files = []
         for file in os.listdir(pdf_dir):
             if file.lower().endswith('.pdf'):

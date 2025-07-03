@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy.orm import Session
 from models import models
 from schema import schemas
@@ -115,15 +115,17 @@ async def upload_resumes(files: List[UploadFile] = File(...)):
     }
 
 @router_uploads.post("/process-resumes")
-async def process_resumes(file: UploadFile = File(...)):
+async def process_resumes(file: UploadFile = File(...), jd: str = Form(None)):
     try:
         uploads_dir = UPLOAD_DIR_RESUMES
         os.makedirs(uploads_dir, exist_ok=True)
         file_path = os.path.join(uploads_dir, file.filename)
         with open(file_path, "wb") as f:
             shutil.copyfileobj(file.file, f)
+        
         extractor = EnhancedPDFExtractor()
-        sample_jd = "Software Engineer with Python and JavaScript experience"
+        # Use the provided JD or fall back to the default
+        sample_jd = jd if jd else "Software Engineer with Python and JavaScript experience"
         result = extractor.process_pdf(file_path, sample_jd, anonymize=True)
         return {
             "message": "Successfully processed resume",
@@ -482,6 +484,369 @@ async def process_experience_letters(
             "message": "Successfully processed and saved experience letter",
             "status": "completed",
             "experience_letter": response
+        }
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+import json
+
+# Add to existing imports
+from ed_cert_parser.parser import CertificateProcessor  # Import the certificate parser
+
+# Add a new router for certificates
+router_certificates = APIRouter(prefix="/certificates", tags=["Certificates"])
+
+# Add a new upload directory for certificates
+UPLOAD_DIR_CERTIFICATES = "uploads_certificates"
+if not os.path.exists(UPLOAD_DIR_CERTIFICATES):
+    os.makedirs(UPLOAD_DIR_CERTIFICATES)
+
+# Certificate Routes
+@router_certificates.get("/", response_model=list[schemas.CertificateResponse])
+async def get_certificates(db: Session = Depends(database.get_db)):
+    certificates = db.query(models.Certificate).all()
+    return certificates
+
+@router_certificates.post("/", response_model=schemas.CertificateResponse)
+async def post_certificate(certificate: schemas.CertificateCreate, db: Session = Depends(database.get_db)):
+    # Validate file_processed path
+    if not certificate.source_file.startswith(UPLOAD_DIR_CERTIFICATES):
+        certificate.source_file = os.path.join(UPLOAD_DIR_CERTIFICATES, os.path.basename(certificate.source_file))
+
+    # Create certificate
+    db_certificate = models.Certificate(
+        university=certificate.university,
+        degree=certificate.degree,
+        gpa=certificate.gpa,
+        graduation_date=certificate.graduation_date,
+        source_file=certificate.source_file,
+        processed_at=certificate.processed_at,
+        text_length=certificate.text_length
+    )
+    db.add(db_certificate)
+    db.flush()  # Get certificate.id before committing
+
+    # Create confidence scores
+    db_confidence_scores = models.Confidence_Scores(
+        certificate_id=db_certificate.id,
+        university=certificate.confidence_scores.university,
+        degree=certificate.confidence_scores.degree,
+        gpa=certificate.confidence_scores.gpa,
+        graduation_date=certificate.confidence_scores.graduation_date,
+        overall=certificate.confidence_scores.overall
+    )
+    db.add(db_confidence_scores)
+
+    # Create extraction methods
+    db_extraction_methods = models.Extraction_Methods(
+        certificate_id=db_certificate.id,
+        university=certificate.extraction_methods.university,
+        degree=certificate.extraction_methods.degree,
+        gpa=certificate.extraction_methods.gpa,
+        graduation_date=certificate.extraction_methods.graduation_date
+    )
+    db.add(db_extraction_methods)
+
+    # Create raw matches
+    for match in certificate.raw_matches.university:
+        db_raw_match = models.Raw_Matches_University(certificate_id=db_certificate.id, match=match)
+        db.add(db_raw_match)
+
+    for match in certificate.raw_matches.degree:
+        db_raw_match = models.Raw_Matches_Degree(certificate_id=db_certificate.id, match=match)
+        db.add(db_raw_match)
+
+    for match in certificate.raw_matches.gpa:
+        db_raw_match = models.Raw_Matches_GPA(certificate_id=db_certificate.id, match=match)
+        db.add(db_raw_match)
+
+    for match in certificate.raw_matches.graduation_date:
+        db_raw_match = models.Raw_Matches_Graduation_Date(certificate_id=db_certificate.id, match=match)
+        db.add(db_raw_match)
+
+    # Create extracted entities
+    for university in certificate.extracted_entities.universities:
+        db_entity = models.Extracted_Entities_Universities(certificate_id=db_certificate.id, university=university)
+        db.add(db_entity)
+
+    for organization in certificate.extracted_entities.organizations:
+        db_entity = models.Extracted_Entities_Organizations(certificate_id=db_certificate.id, organization=organization)
+        db.add(db_entity)
+
+    for person in certificate.extracted_entities.persons:
+        db_entity = models.Extracted_Entities_Persons(certificate_id=db_certificate.id, person=person)
+        db.add(db_entity)
+
+    # Create authenticity
+    db_authenticity = models.Authenticity(
+        certificate_id=db_certificate.id,
+        overall_score=certificate.authenticity.overall_score,
+        document_hash=certificate.authenticity.document_hash
+    )
+    db.add(db_authenticity)
+    db.flush()
+
+    # Create digital signatures
+    db_digital_signatures = models.Digital_Signatures(
+        authenticity_id=db_authenticity.id,
+        has_digital_signature=certificate.authenticity.digital_signatures.has_digital_signature,
+        signature_count=certificate.authenticity.digital_signatures.signature_count,
+        encrypted=certificate.authenticity.digital_signatures.encrypted,
+        error=certificate.authenticity.digital_signatures.error
+    )
+    db.add(db_digital_signatures)
+    db.flush()
+
+    # Create certificate metadata
+    db_certificate_metadata = models.Certificate_Metadata(
+        digital_signature_id=db_digital_signatures.id,
+        creator=certificate.authenticity.digital_signatures.metadata.creator,
+        producer=certificate.authenticity.digital_signatures.metadata.producer,
+        subject=certificate.authenticity.digital_signatures.metadata.subject,
+        author=certificate.authenticity.digital_signatures.metadata.author,
+        creation_date=certificate.authenticity.digital_signatures.metadata.creation_date,
+        modification_date=certificate.authenticity.digital_signatures.metadata.modification_date
+    )
+    db.add(db_certificate_metadata)
+
+    # Create security features
+    for feature in certificate.authenticity.digital_signatures.security_features:
+        db_security_feature = models.Security_Features(digital_signature_id=db_digital_signatures.id, feature=feature)
+        db.add(db_security_feature)
+
+    # Create QR codes
+    for qr_code in certificate.authenticity.qr_codes:
+        db_qr_code = models.QR_Codes(authenticity_id=db_authenticity.id, qr_code=qr_code.get("data"))
+        db.add(db_qr_code)
+
+    # Create QR verification
+    for verification in certificate.authenticity.qr_verification:
+        db_qr_verification = models.QR_Verification(authenticity_id=db_authenticity.id, verification=json.dumps(verification))
+        db.add(db_qr_verification)
+
+    # Create authenticity indicators
+    for indicator in certificate.authenticity.authenticity_indicators:
+        db_indicator = models.Authenticity_Indicators(authenticity_id=db_authenticity.id, indicator=indicator)
+        db.add(db_indicator)
+
+    # Create risk factors
+    for risk_factor in certificate.authenticity.risk_factors:
+        db_risk_factor = models.Risk_Factors(authenticity_id=db_authenticity.id, risk_factor=risk_factor)
+        db.add(db_risk_factor)
+
+    # Create recommendations
+    for recommendation in certificate.authenticity.recommendations:
+        db_recommendation = models.Recommendations(authenticity_id=db_authenticity.id, recommendation=recommendation)
+        db.add(db_recommendation)
+
+    db.commit()
+    db.refresh(db_certificate)
+    return db_certificate
+
+@router_certificates.get("/{id}", response_model=schemas.CertificateResponse)
+async def get_certificate_by_id(id: UUID, db: Session = Depends(database.get_db)):
+    certificate = db.query(models.Certificate).filter(models.Certificate.id == id).first()
+    if certificate is None:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+    return certificate
+
+# Add to the existing uploads router
+@router_uploads.post("/upload-certificates")
+async def upload_certificates(files: List[UploadFile] = File(...)):
+    """
+    Upload multiple PDF files for certificates
+    """
+    if not files:
+        raise HTTPException(status_code=400, detail="No files provided")
+
+    uploaded_files = []
+
+    for file in files:
+        # Validate file type
+        if not file.filename.endswith('.pdf'):
+            raise HTTPException(
+                status_code=400,
+                detail=f"File {file.filename} is not a PDF"
+            )
+
+        # Save file
+        file_path = os.path.join(UPLOAD_DIR_CERTIFICATES, file.filename)
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+
+            uploaded_files.append({
+                "filename": file.filename,
+                "size": file.size,
+                "path": file_path
+            })
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to save file {file.filename}: {str(e)}"
+            )
+
+    return {
+        "message": f"Successfully uploaded {len(uploaded_files)} files",
+        "files": uploaded_files
+    }
+
+@router_uploads.post("/process-certificates")
+async def process_certificates(file: UploadFile = File(...), db: Session = Depends(database.get_db)):
+    try:
+        # Save the file
+        uploads_dir = UPLOAD_DIR_CERTIFICATES
+        os.makedirs(uploads_dir, exist_ok=True)
+        file_path = os.path.join(uploads_dir, file.filename)
+        with open(file_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+
+        # Process certificate
+        processor = CertificateProcessor(upload_folder=UPLOAD_DIR_CERTIFICATES)
+        result = processor.process_file(file.filename)
+
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+
+        # Create database objects
+        certificate_data = schemas.CertificateCreate(**result)
+
+        db_certificate = models.Certificate(
+            university=certificate_data.university,
+            degree=certificate_data.degree,
+            gpa=certificate_data.gpa,
+            graduation_date=certificate_data.graduation_date,
+            source_file=certificate_data.source_file,
+            processed_at=certificate_data.processed_at,
+            text_length=certificate_data.text_length
+        )
+        db.add(db_certificate)
+        db.flush()
+
+        # Create confidence scores
+        db_confidence_scores = models.Confidence_Scores(
+            certificate_id=db_certificate.id,
+            university=certificate_data.confidence_scores.university,
+            degree=certificate_data.confidence_scores.degree,
+            gpa=certificate_data.confidence_scores.gpa,
+            graduation_date=certificate_data.confidence_scores.graduation_date,
+            overall=certificate_data.confidence_scores.overall
+        )
+        db.add(db_confidence_scores)
+
+        # Create extraction methods
+        db_extraction_methods = models.Extraction_Methods(
+            certificate_id=db_certificate.id,
+            university=certificate_data.extraction_methods.university,
+            degree=certificate_data.extraction_methods.degree,
+            gpa=certificate_data.extraction_methods.gpa,
+            graduation_date=certificate_data.extraction_methods.graduation_date
+        )
+        db.add(db_extraction_methods)
+
+        # Create raw matches
+        for match in certificate_data.raw_matches.university:
+            db_raw_match = models.Raw_Matches_University(certificate_id=db_certificate.id, match=match)
+            db.add(db_raw_match)
+
+        for match in certificate_data.raw_matches.degree:
+            db_raw_match = models.Raw_Matches_Degree(certificate_id=db_certificate.id, match=match)
+            db.add(db_raw_match)
+
+        for match in certificate_data.raw_matches.gpa:
+            db_raw_match = models.Raw_Matches_GPA(certificate_id=db_certificate.id, match=match)
+            db.add(db_raw_match)
+
+        for match in certificate_data.raw_matches.graduation_date:
+            db_raw_match = models.Raw_Matches_Graduation_Date(certificate_id=db_certificate.id, match=match)
+            db.add(db_raw_match)
+
+        # Create extracted entities
+        for university in certificate_data.extracted_entities.universities:
+            db_entity = models.Extracted_Entities_Universities(certificate_id=db_certificate.id, university=university)
+            db.add(db_entity)
+
+        for organization in certificate_data.extracted_entities.organizations:
+            db_entity = models.Extracted_Entities_Organizations(certificate_id=db_certificate.id, organization=organization)
+            db.add(db_entity)
+
+        for person in certificate_data.extracted_entities.persons:
+            db_entity = models.Extracted_Entities_Persons(certificate_id=db_certificate.id, person=person)
+            db.add(db_entity)
+
+        # Create authenticity
+        db_authenticity = models.Authenticity(
+            certificate_id=db_certificate.id,
+            overall_score=certificate_data.authenticity.overall_score,
+            document_hash=certificate_data.authenticity.document_hash
+        )
+        db.add(db_authenticity)
+        db.flush()
+
+        # Create digital signatures
+        db_digital_signatures = models.Digital_Signatures(
+            authenticity_id=db_authenticity.id,
+            has_digital_signature=certificate_data.authenticity.digital_signatures.has_digital_signature,
+            signature_count=certificate_data.authenticity.digital_signatures.signature_count,
+            encrypted=certificate_data.authenticity.digital_signatures.encrypted,
+            error=certificate_data.authenticity.digital_signatures.error
+        )
+        db.add(db_digital_signatures)
+        db.flush()
+
+        # Create certificate metadata
+        db_certificate_metadata = models.Certificate_Metadata(
+            digital_signature_id=db_digital_signatures.id,
+            creator=certificate_data.authenticity.digital_signatures.metadata.creator,
+            producer=certificate_data.authenticity.digital_signatures.metadata.producer,
+            subject=certificate_data.authenticity.digital_signatures.metadata.subject,
+            author=certificate_data.authenticity.digital_signatures.metadata.author,
+            creation_date=certificate_data.authenticity.digital_signatures.metadata.creation_date,
+            modification_date=certificate_data.authenticity.digital_signatures.metadata.modification_date
+        )
+        db.add(db_certificate_metadata)
+
+        # Create security features
+        for feature in certificate_data.authenticity.digital_signatures.security_features:
+            db_security_feature = models.Security_Features(digital_signature_id=db_digital_signatures.id, feature=feature)
+            db.add(db_security_feature)
+
+        # Create QR codes
+        for qr_code in certificate_data.authenticity.qr_codes:
+            db_qr_code = models.QR_Codes(authenticity_id=db_authenticity.id, qr_code=qr_code.get("data"))
+            db.add(db_qr_code)
+
+        # Create QR verification
+        for verification in certificate_data.authenticity.qr_verification:
+            db_qr_verification = models.QR_Verification(authenticity_id=db_authenticity.id, verification=json.dumps(verification))
+            db.add(db_qr_verification)
+
+        # Create authenticity indicators
+        for indicator in certificate_data.authenticity.authenticity_indicators:
+            db_indicator = models.Authenticity_Indicators(authenticity_id=db_authenticity.id, indicator=indicator)
+            db.add(db_indicator)
+
+        # Create risk factors
+        for risk_factor in certificate_data.authenticity.risk_factors:
+            db_risk_factor = models.Risk_Factors(authenticity_id=db_authenticity.id, risk_factor=risk_factor)
+            db.add(db_risk_factor)
+
+        # Create recommendations
+        for recommendation in certificate_data.authenticity.recommendations:
+            db_recommendation = models.Recommendations(authenticity_id=db_authenticity.id, recommendation=recommendation)
+            db.add(db_recommendation)
+
+        db.commit()
+        db.refresh(db_certificate)
+
+        # Build response
+        response = schemas.CertificateResponse.from_orm(db_certificate)
+
+        return {
+            "message": "Successfully processed and saved certificate",
+            "status": "completed",
+            "certificate": response
         }
     except Exception as e:
         traceback.print_exc()

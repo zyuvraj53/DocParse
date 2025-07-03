@@ -1,7 +1,7 @@
 import re
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, configure_mappers
 from sqlalchemy.dialects.postgresql.base import PGDialect
 
 # Patch SQLAlchemy for CockroachDB version parsing
@@ -19,6 +19,12 @@ DATABASE_URL = "postgresql://root@localhost:26257/resume_db?sslmode=disable"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# Import models to ensure they are registered with SQLAlchemy
+from models import models  # Adjust the import path if necessary
+
+# Configure mappers to resolve relationships
+configure_mappers()
 
 def get_db():
     db = SessionLocal()

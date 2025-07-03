@@ -1,0 +1,86 @@
+{
+  "university": "Colorado",
+  "degree": "Ethical Decision Making for Success in the Tech",
+  "gpa": null,
+  "graduation_date": "March 2025",
+  "confidence_scores": {
+    "university": 0.8,
+    "degree": 0.8,
+    "gpa": 0.0,
+    "graduation_date": 0.8,
+    "overall": 0.6000000000000001
+  },
+  "extraction_methods": {
+    "university": "regex",
+    "degree": "regex",
+    "gpa": "none",
+    "graduation_date": "dateparser"
+  },
+  "raw_matches": {
+    "university": [
+      "University of Colorado Boulder and offered",
+      "Colorado",
+      "\nPRATYUSH KUMAR NAYAK\nhas successfully completed\nEthical Decision Making for Success in the Tech\nIndustry\nan online non-credit course authorized by",
+      "\nPRATYUSH KUMAR NAYAK\nhas successfully completed\nEthical Decision Making for Success in the Tech\nIndustry\nan online non-credit course authorized by University of Colorado Boulder and offered\nthrough Coursera\nDaniel Moorer\nProfessor and Scholar In Residence\nLockheed Martin Engineering Management Program"
+    ],
+    "degree": [
+      "Ethical Decision Making for Success in the Tech",
+      "\nPRATYUSH KUMAR NAYAK\nhas successfully completed\nEthical Decision Making for Success in the Tech\nIndustry\nan online non-credit"
+    ],
+    "gpa": [],
+    "graduation_date": [
+      "Mar 12, 2025"
+    ]
+  },
+  "extracted_entities": {
+    "universities": [
+      "University of Colorado Boulder",
+      "Martin Engineering Management Program\nCollege of Engineering"
+    ],
+    "organizations": [
+      "Success"
+    ],
+    "persons": [
+      "Mar 12, 2025",
+      "Coursera",
+      "Daniel Moorer",
+      "Coursera"
+    ]
+  },
+  "authenticity": {
+    "overall_score": 42.0,
+    "qr_codes": [],
+    "qr_verification": [],
+    "digital_signatures": {
+      "has_digital_signature": false,
+      "signature_count": 0,
+      "security_features": [
+        "Contains form annotations"
+      ],
+      "metadata": {
+        "creator": "Chromium",
+        "producer": "Skia/PDF m86",
+        "subject": "",
+        "author": "",
+        "creation_date": "D:20250312180650+00'00'",
+        "modification_date": "D:20250312180650+00'00'"
+      },
+      "encrypted": false,
+      "error": null
+    },
+    "document_hash": "36ed11d2b849c935480ee40853cf8594637d109c92fecc6fba244a693b2e3bc4",
+    "authenticity_indicators": [
+      "Contains form annotations",
+      "Contains creation metadata",
+      "Contains verification keywords: verify",
+      "Issued by recognized institutions: university, college, coursera"
+    ],
+    "risk_factors": [],
+    "recommendations": [
+      "Low authenticity confidence - manual verification recommended"
+    ]
+  },
+  "source_file": "certificate.pdf",
+  "processed_at": "2025-07-03T07:12:11.563530",
+  "text_length": 504
+}

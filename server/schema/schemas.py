@@ -181,3 +181,261 @@ class ExperienceLetterUpdate(BaseModel):
     extracted_data: Optional[ExperienceLetterDataBase] = None
     formatting_consistency: Optional[ExperienceLetterFormattingBase] = None
     anomalies: Optional[List[ExperienceLetterAnomalyBase]] = None
+
+import json
+
+# Certificate Schemas
+class ConfidenceScoresCreate(BaseModel):
+    university: Optional[float] = None
+    degree: Optional[float] = None
+    gpa: Optional[float] = None
+    graduation_date: Optional[float] = None
+    overall: Optional[float] = None
+
+class ExtractionMethodsCreate(BaseModel):
+    university: Optional[str] = None
+    degree: Optional[str] = None
+    gpa: Optional[str] = None
+    graduation_date: Optional[str] = None
+
+class RawMatchesCreate(BaseModel):
+    university: List[str] = []
+    degree: List[str] = []
+    gpa: List[str] = []
+    graduation_date: List[str] = []
+
+class ExtractedEntitiesCreate(BaseModel):
+    universities: List[str] = []
+    organizations: List[str] = []
+    persons: List[str] = []
+
+class DigitalSignaturesMetadataCreate(BaseModel):
+    creator: Optional[str] = None
+    producer: Optional[str] = None
+    subject: Optional[str] = None
+    author: Optional[str] = None
+    creation_date: Optional[str] = None
+    modification_date: Optional[str] = None
+
+class DigitalSignaturesCreate(BaseModel):
+    has_digital_signature: Optional[bool] = None
+    signature_count: Optional[int] = None
+    security_features: List[str] = []
+    metadata: DigitalSignaturesMetadataCreate
+    encrypted: Optional[bool] = None
+    error: Optional[str] = None
+
+class AuthenticityCreate(BaseModel):
+    overall_score: Optional[float] = None
+    qr_codes: List[dict] = []
+    qr_verification: List[dict] = []
+    digital_signatures: DigitalSignaturesCreate
+    document_hash: Optional[str] = None
+    authenticity_indicators: List[str] = []
+    risk_factors: List[str] = []
+    recommendations: List[str] = []
+
+class CertificateCreate(BaseModel):
+    university: Optional[str] = None
+    degree: Optional[str] = None
+    gpa: Optional[float] = None
+    graduation_date: Optional[str] = None
+    confidence_scores: ConfidenceScoresCreate
+    extraction_methods: ExtractionMethodsCreate
+    raw_matches: RawMatchesCreate
+    extracted_entities: ExtractedEntitiesCreate
+    authenticity: AuthenticityCreate
+    source_file: Optional[str] = None
+    processed_at: Optional[str] = None
+    text_length: Optional[int] = None
+
+class ConfidenceScoresResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    university: Optional[float] = None
+    degree: Optional[float] = None
+    gpa: Optional[float] = None
+    graduation_date: Optional[float] = None
+    overall: Optional[float] = None
+
+    class Config:
+        from_attributes = True
+
+class ExtractionMethodsResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    university: Optional[str] = None
+    degree: Optional[str] = None
+    gpa: Optional[str] = None
+    graduation_date: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class RawMatchesUniversityResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    match: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class RawMatchesDegreeResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    match: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class RawMatchesGPAResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    match: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class RawMatchesGraduationDateResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    match: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ExtractedEntitiesUniversitiesResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    university: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ExtractedEntitiesOrganizationsResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    organization: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ExtractedEntitiesPersonsResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    person: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class CertificateMetadataResponse(BaseModel):
+    id: UUID
+    digital_signature_id: UUID
+    creator: Optional[str] = None
+    producer: Optional[str] = None
+    subject: Optional[str] = None
+    author: Optional[str] = None
+    creation_date: Optional[str] = None
+    modification_date: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class SecurityFeaturesResponse(BaseModel):
+    id: UUID
+    digital_signature_id: UUID
+    feature: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class DigitalSignaturesResponse(BaseModel):
+    id: UUID
+    authenticity_id: UUID
+    has_digital_signature: Optional[bool] = None
+    signature_count: Optional[int] = None
+    encrypted: Optional[bool] = None
+    error: Optional[str] = None
+    certificate_metadata: Optional[CertificateMetadataResponse] = None
+    security_features: List[SecurityFeaturesResponse] = []
+
+    class Config:
+        from_attributes = True
+
+class QR_CodesResponse(BaseModel):
+    id: UUID
+    authenticity_id: UUID
+    qr_code: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class QR_VerificationResponse(BaseModel):
+    id: UUID
+    authenticity_id: UUID
+    verification: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class AuthenticityIndicatorsResponse(BaseModel):
+    id: UUID
+    authenticity_id: UUID
+    indicator: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class RiskFactorsResponse(BaseModel):
+    id: UUID
+    authenticity_id: UUID
+    risk_factor: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class RecommendationsResponse(BaseModel):
+    id: UUID
+    authenticity_id: UUID
+    recommendation: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class AuthenticityResponse(BaseModel):
+    id: UUID
+    certificate_id: UUID
+    overall_score: Optional[float] = None
+    document_hash: Optional[str] = None
+    digital_signatures: Optional[DigitalSignaturesResponse] = None
+    qr_codes: List[QR_CodesResponse] = []
+    qr_verification: List[QR_VerificationResponse] = []
+    authenticity_indicators: List[AuthenticityIndicatorsResponse] = []
+    risk_factors: List[RiskFactorsResponse] = []
+    recommendations: List[RecommendationsResponse] = []
+
+    class Config:
+        from_attributes = True
+
+class CertificateResponse(BaseModel):
+    id: UUID
+    university: Optional[str] = None
+    degree: Optional[str] = None
+    gpa: Optional[float] = None
+    graduation_date: Optional[str] = None
+    source_file: Optional[str] = None
+    processed_at: Optional[datetime] = None
+    text_length: Optional[int] = None
+    confidence_scores: Optional[ConfidenceScoresResponse] = None  # Single object
+    extraction_methods: Optional[ExtractionMethodsResponse] = None  # Single object
+    raw_matches_university: List[RawMatchesUniversityResponse] = []
+    raw_matches_degree: List[RawMatchesDegreeResponse] = []
+    raw_matches_gpa: List[RawMatchesGPAResponse] = []
+    raw_matches_graduation_date: List[RawMatchesGraduationDateResponse] = []
+    extracted_entities_universities: List[ExtractedEntitiesUniversitiesResponse] = []
+    extracted_entities_organizations: List[ExtractedEntitiesOrganizationsResponse] = []
+    extracted_entities_persons: List[ExtractedEntitiesPersonsResponse] = []
+    authenticity: Optional[AuthenticityResponse] = None  # Single object
+
+    class Config:
+        from_attributes = True
