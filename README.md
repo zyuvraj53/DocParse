@@ -127,10 +127,148 @@
 
 ## Database
 
+- Run this is your local database where cockroach.exe is stored:
+```
+.\cockroach.exe start-single-node --insecure --listen-addr=localhost:26257 --http-addr=localhost:8080
+```
+
+- Then in a new terminal where cockroach.exe is stored, run this command:
+```
+.\cockroach.exe sql --insecure --host=localhost:26257
+```
+
+- Then write this to switch to resumes_table:
+
+```
+SET DATABASE = resume_db;
+```
+
 - Make these tables in your local database:
+
+- For Resumes table:
+```
+-- Create resumes table
+CREATE TABLE resumes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    file_name STRING NOT NULL,
+    skills JSONB,
+    tools STRING[],
+    concepts STRING[],
+    others STRING[],
+    resume_metadata JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Create personal_information table
+CREATE TABLE personal_information (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    resume_id UUID NOT NULL UNIQUE,
+    name STRING,
+    email STRING,
+    phone STRING,
+    location STRING,
+    CONSTRAINT fk_resume FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE
+);
+
+-- Create education table
+CREATE TABLE education (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    resume_id UUID NOT NULL,
+    institution STRING,
+    degree STRING,
+    field STRING,
+    CONSTRAINT fk_resume FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE
+);
+
+-- Create languages table
+CREATE TABLE languages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    resume_id UUID NOT NULL,
+    name STRING,
+    CONSTRAINT fk_resume FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE
+);
+
+-- Create indexes for foreign keys (CockroachDB recommends indexing foreign keys for performance)
+CREATE INDEX idx_personal_information_resume_id ON personal_information(resume_id);
+CREATE INDEX idx_education_resume_id ON education(resume_id);
+CREATE INDEX idx_languages_resume_id ON languages(resume_id);
+```
+
+- for payslips table:
+```
+CREATE TABLE employment_proof (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    payslip_id UUID UNIQUE NOT NULL,
+    employee_name TEXT,
+    designation TEXT,
+    valid TEXT,
+    FOREIGN KEY (payslip_id) REFERENCES payslips(id) ON DELETE CASCADE
+);
+
+CREATE TABLE payslips (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    file_processed TEXT NOT NULL,
+    components JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+- for experience letter table:
+
+```
+CREATE TABLE experience_letters (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    file_processed STRING NOT NULL,
+    raw_text_length STRING NULL,
+    confidence_score STRING NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE experience_letter_data (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    experience_letter_id UUID NOT NULL,
+    org_name STRING NULL,
+    job_title STRING NULL,
+    employee_name STRING NULL,
+    start_date STRING NULL,
+    end_date STRING NULL,
+    duration_years STRING NULL,
+    CONSTRAINT fk_experience_letter FOREIGN KEY (experience_letter_id) REFERENCES experience_letters(id) ON DELETE CASCADE,
+    UNIQUE (experience_letter_id)
+);
+
+CREATE TABLE experience_letter_formatting (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    experience_letter_id UUID NOT NULL,
+    all_required_fields_present STRING NULL,
+    dates_valid STRING NULL,
+    dates_logical STRING NULL,
+    organization_name_valid STRING NULL,
+    job_title_valid STRING NULL,
+    employee_name_valid STRING NULL,
+    manager_info_present STRING NULL,
+    CONSTRAINT fk_experience_letter FOREIGN KEY (experience_letter_id) REFERENCES experience_letters(id) ON DELETE CASCADE,
+    UNIQUE (experience_letter_id)
+);
+
+CREATE TABLE experience_letter_anomalies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    experience_letter_id UUID NOT NULL,
+    anomaly_type STRING NOT NULL,
+    description STRING NULL,
+    CONSTRAINT fk_experience_letter FOREIGN KEY (experience_letter_id) REFERENCES experience_letters(id) ON DELETE CASCADE
+);
+
+-- Create indexes for better query performance
+CREATE INDEX idx_experience_letter_employee_name ON experience_letter_data(employee_name);
+CREATE INDEX idx_experience_letter_org_name ON experience_letter_data(org_name);
+CREATE INDEX idx_experience_letter_dates ON experience_letter_data(start_date, end_date);
+CREATE INDEX idx_experience_letter_anomalies ON experience_letter_anomalies(experience_letter_id);
+```
 
 - for Educational Certificate:
 
+```
 -- Certificates table (main table)
 CREATE TABLE Certificates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -302,6 +440,28 @@ CREATE TABLE Recommendations (
     recommendation STRING NULL,
     FOREIGN KEY (authenticity_id) REFERENCES Authenticity(id) ON DELETE CASCADE
 );
+
+-- Add created_at to all relevant tables
+ALTER TABLE certificates ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE authenticity ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE confidence_scores ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE extraction_methods ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE raw_matches_university ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE raw_matches_degree ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE raw_matches_gpa ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE raw_matches_graduation_date ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE extracted_entities_universities ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE extracted_entities_organizations ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE extracted_entities_persons ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE digital_signatures ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE security_features ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE certificate_metadata ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE qr_codes ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE qr_verification ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE authenticity_indicators ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE risk_factors ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE recommendations ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+```
 
 ### ER_Diagrams
 - The Resumes schema
