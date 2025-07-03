@@ -1,0 +1,82 @@
+{
+  "university": "Meta",
+  "degree": "has successfully completed",
+  "gpa": null,
+  "graduation_date": "June 2025",
+  "confidence_scores": {
+    "university": 0.8,
+    "degree": 0.8,
+    "gpa": 0.0,
+    "graduation_date": 0.8,
+    "overall": 0.6000000000000001
+  },
+  "extraction_methods": {
+    "university": "regex",
+    "degree": "regex",
+    "gpa": "none",
+    "graduation_date": "dateparser"
+  },
+  "raw_matches": {
+    "university": [
+      "Meta",
+      "\nPiyush Prasun\nhas successfully completed\nDjango Web Framework\nan online non-credit course authorized by Meta",
+      "and"
+    ],
+    "degree": [
+      "Django Web Framework",
+      "\nPiyush Prasun\nhas successfully completed\nDjango Web Framework\nan online non-credit"
+    ],
+    "gpa": [],
+    "graduation_date": [
+      "Jun 29, 2025"
+    ]
+  },
+  "extracted_entities": {
+    "universities": [],
+    "organizations": [
+      "Piyush Prasun",
+      "Meta",
+      "Coursera\nVerify"
+    ],
+    "persons": [
+      "Django Web Framework",
+      "Coursera"
+    ]
+  },
+  "authenticity": {
+    "overall_score": 42.0,
+    "qr_codes": [],
+    "qr_verification": [],
+    "digital_signatures": {
+      "has_digital_signature": false,
+      "signature_count": 0,
+      "security_features": [
+        "Contains form annotations"
+      ],
+      "metadata": {
+        "creator": "Chromium",
+        "producer": "Skia/PDF m86",
+        "subject": "",
+        "author": "",
+        "creation_date": "D:20250630031416+00'00'",
+        "modification_date": "D:20250630031416+00'00'"
+      },
+      "encrypted": false,
+      "error": null
+    },
+    "document_hash": "1b44d0d07e607e4640a5b3effe168ff9c9f03db03626e9a713b6442ece3c4813",
+    "authenticity_indicators": [
+      "Contains form annotations",
+      "Contains creation metadata",
+      "Contains verification keywords: verify",
+      "Issued by recognized institutions: coursera, meta"
+    ],
+    "risk_factors": [],
+    "recommendations": [
+      "Low authenticity confidence - manual verification recommended"
+    ]
+  },
+  "source_file": "Coursera 6P4G88IO5M5I.pdf",
+  "processed_at": "2025-07-03T08:03:52.117381",
+  "text_length": 296
+}

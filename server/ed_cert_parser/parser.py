@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 class CertificateProcessor:
     """Main class for processing PDF certificates and extracting structured data."""
     
-    def __init__(self, upload_folder="upload", output_folder="output"):
+    def __init__(self, upload_folder="uploads_certificates", output_folder="output"):
         self.upload_folder = Path(upload_folder)
         self.output_folder = Path(output_folder)
         
